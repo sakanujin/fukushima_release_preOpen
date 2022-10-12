@@ -12,8 +12,8 @@ from kivy.clock import Clock
 from functools import partial 
 ################################################# 
 # if you use the code for Raspberry Pi, turn into True,  if use PC pls put False
-#RASPBERRY_CODE = True
-RASPBERRY_CODE = False
+RASPBERRY_CODE = True
+#RASPBERRY_CODE = False
 
 if (RASPBERRY_CODE == True):
     import pt100
@@ -28,13 +28,13 @@ import time
 #Window.fullscreen = True
 #Config.set('input', 'mouse', 'mouse, disable_on_activity')
 #jllWindow.size = (1000,500)
-#Window.size = (800,515)
-Window.size = (450,350)
+Window.size = (800,515)
+#Window.size = (450,350)
 ################################################# 
 #GPIO  Test 
-import RPi.GPIO as GPIO    # later delete by saka
-GPIO.setmode(GPIO.BCM)     # later delete by saka
-GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # ERR State # later delete by saka
+#import RPi.GPIO as GPIO    # later delete by saka
+#GPIO.setmode(GPIO.BCM)     # later delete by saka
+#GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # ERR State # later delete by saka
 
 if (RASPBERRY_CODE == True):
     GPIO.setmode(GPIO.BCM)
@@ -59,13 +59,12 @@ def Err_and_Bzr ():
             print ("             Error Occur")
             print ("****************************************")
         else :
-            print ("")
-            print ("now stable, and do well everything")
-            print ("")
+            print ("////////////////////////////////////////")
+            print ("//now stable, and do well everything//")
+            print ("////////////////////////////////////////")
 
 
 ################################################# 
-#def control_OnOff_by_temp(now, setting, delta:float):
 def control_OnOff_by_temp():
     # print("What is: {}".format(glob_AGI_stat))
     # print("#DEBUG# On/Off delay time is ", glob_delay)
@@ -85,7 +84,7 @@ def control_OnOff_by_temp():
             if (glob_AGI_stat == 2):# AGI Danzoku 
                 GPIO.output(16, 0)
 ################################################# 
- 
+""" 
 class Display(BoxLayout):
     ev_type = ''
     
@@ -96,7 +95,7 @@ class Display(BoxLayout):
         ev_type = glob_event_type
         print(ev_type)
     pass
- 
+""" 
 class Screen_One(Screen): # 3rd Screen
     stMin =   StringProperty()
     valMin =   3
@@ -198,11 +197,20 @@ class Screen_AGI(Screen):
     pass
 ################################################
 class Screen_Alert(Screen):
+    smalt = ScreenManager() 
 
     def __init__(self, **kwargs):
         super(Screen_Alert, self).__init__(**kwargs)
 
-    pass
+    def btnBack(self):
+        self.smalt.add_widget(Display(name='Display'))
+        #self.smpy.add_widget(Screen_Alert(name='Screen_Alert'))
+        #self.smpy.add_widget(Screen_One(name='Screen_One'))
+        self.smalt.current = 'Display'
+        SM02App().build()
+        print("Move to main view")
+
+
 
 ################################################
 
@@ -276,11 +284,37 @@ class TextWidget(Screen):
             # print("#DEBUG set TEMP push minus:"  , self.set_num) 
             # print("#DEBUG set grobal_setting_temp:"  , glob_setting_temp) 
 
+#class Display(BoxLayout):
+class Display(Screen):
+    ev_type = ''
+    
+    def touch_down_def(self, touch):
+        global glob_event_type
+
+        glob_event_type = str(type(touch))
+        ev_type = glob_event_type
+        print(ev_type)
+    pass
+
 class SM02App(App):
+    smpy = ScreenManager() 
+    #err_flag = 1;
+
+    def err_occur_trans(self):
+        #if (self.err_flag == 1):
+        if GPIO.input(12) == 1:
+            self.smpy.current= 'Screen_Alert'
+
     def build(self):
         Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), glob_delay*60)
         Clock.schedule_interval(lambda dt: Err_and_Bzr(), 1)
-        return Display()
+        self.smpy.add_widget(Display(name='Display'))
+        self.smpy.add_widget(Screen_Alert(name='Screen_Alert'))
+        self.smpy.add_widget(Screen_One(name='Screen_One'))
+        self.smpy.current = 'Display'
+        Clock.schedule_interval(lambda dt: self.err_occur_trans(), 5)
+        #return Display()
+        return self.smpy
 
 if __name__ == "__main__":
     SM02App().run()
