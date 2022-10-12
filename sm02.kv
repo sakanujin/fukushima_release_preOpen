@@ -282,9 +282,14 @@
                     #color: 0,0,1,1
                     color: 0.23,0.84,0.83,1
                     font_size: 170
+                    text_size:self.size
+                    valign:"middle"
+                    halign:"right"
                 Label:
                     text: '分'
                     font_size:58
+                    text_size:self.size
+                    halign:"center"
 
             BoxLayout:
                 orientation: 'horizontal'
@@ -296,7 +301,12 @@
                     text: root.temp_now_KT
                     #text: str(-25)
                     font_size:100
+                    text_size:self.size
+                    valign:"middle"
+                    halign:"right"
                 Label:
+                    text_size:self.size
+                    halign:"center"
                     text: '℃'
                     font_size:58
 
@@ -434,12 +444,19 @@
                     font_name: './mplus-2c-regular.ttf'
                     font_size:170 
                     text: root.temp_now
+                    text_size:self.size
+                    valign:"middle"
+                    halign:"right"
                     color: 0.23,0.84,0.83,1
                 Label:
                     id: label1_3
                     font_name: './mplus-2c-regular.ttf'
                     font_size: 58
-                    #text_size:self.size
+                    text_size:self.size
+                    halign:"center"
+                    #valigh:"center"
+                    #haligh:"right"
+                    #haligh:"bottom"
                     #valigh:"bottom"
                     #haligh:"right"
                     text: "℃"
@@ -454,6 +471,9 @@
                     font_name: './mplus-2c-regular.ttf'
                     font_size:100 
                     text: root.temp_set
+                    text_size:self.size
+                    valign:"middle"
+                    halign:"right"
                 Label:
                     id: label1_6
                     font_name: './mplus-2c-regular.ttf'
@@ -461,6 +481,8 @@
                     #text_size:self.size
                     #valigh:"bottom"
                     #haligh:"right"
+                    text_size:self.size
+                    halign:"center"
                     text: "℃"
 
         BoxLayout:

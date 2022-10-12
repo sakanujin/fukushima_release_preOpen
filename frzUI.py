@@ -12,9 +12,8 @@ from kivy.clock import Clock
 from functools import partial 
 ################################################# 
 # if you use the code for Raspberry Pi, turn into True,  if use PC pls put False
-
-RASPBERRY_CODE = True
-#RASPBERRY_CODE = False
+#RASPBERRY_CODE = True
+RASPBERRY_CODE = False
 
 if (RASPBERRY_CODE == True):
     import pt100
@@ -29,9 +28,14 @@ import time
 #Window.fullscreen = True
 #Config.set('input', 'mouse', 'mouse, disable_on_activity')
 #jllWindow.size = (1000,500)
-Window.size = (800,515)
+#Window.size = (800,515)
+Window.size = (450,350)
 ################################################# 
 #GPIO  Test 
+import RPi.GPIO as GPIO    # later delete by saka
+GPIO.setmode(GPIO.BCM)     # later delete by saka
+GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # ERR State # later delete by saka
+
 if (RASPBERRY_CODE == True):
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(21, GPIO.OUT) #CDU  
@@ -46,6 +50,19 @@ glob_current_temp = 25
 glob_setting_temp = 25
 glob_delay        = 3
 glob_event_type = ''
+################################################# 
+def Err_and_Bzr ():
+    #if (RASPBERRY_CODE == True):
+    if (RASPBERRY_CODE == False):
+        if GPIO.input(12) == 1:
+            print ("****************** CAUTION *************")
+            print ("             Error Occur")
+            print ("****************************************")
+        else :
+            print ("")
+            print ("now stable, and do well everything")
+            print ("")
+
 
 ################################################# 
 #def control_OnOff_by_temp(now, setting, delta:float):
@@ -129,12 +146,14 @@ class Screen_KitchenTimer(Screen):
     def __init__(self, **kwargs):
         global glob_current_temp
         super(Screen_KitchenTimer, self).__init__(**kwargs)
-        self.temp_now_KT = str(pt100.pt100GetTmp())
-        Clock.schedule_interval(lambda dt: self.tempUpdate(), 1)
+        if (RASPBERRY_CODE  == True):
+            self.temp_now_KT = str(pt100.pt100GetTmp())
+            Clock.schedule_interval(lambda dt: self.tempUpdate(), 1)
 
     def tempUpdate(self):
         global glob_current_temp
-        self.temp_now_KT = str(pt100.pt100GetTmp())
+        if (RASPBERRY_CODE  == true):
+            self.temp_now_KT = str(pt100.pt100GetTmp())
     
     def on_command(self, command):
         if('Mouse' in glob_event_type):
@@ -194,7 +213,7 @@ class TextWidget(Screen):
     text4 = StringProperty()
     temp_now = StringProperty()
     temp_set = StringProperty()
-    set_num  = 0   
+    set_num  = -30   
 
     def __init__(self, **kwargs):
         super(TextWidget, self).__init__(**kwargs)
@@ -210,7 +229,8 @@ class TextWidget(Screen):
         else: 
             self.temp_now = str(25)
 
-        self.temp_set = str(self.temp_now)
+        #self.temp_set = str(self.temp_now)
+        self.temp_set = str(self.set_num)
         self.set_num  = int(self.temp_set)
 
         Clock.schedule_interval(lambda dt: self.tempUpdate(), 1)
@@ -227,7 +247,8 @@ class TextWidget(Screen):
             #print(self.text4)
 
     def tempUpdate(self):
-        self.temp_now = str(pt100.pt100GetTmp())
+        if (RASPBERRY_CODE  == True):
+            self.temp_now = str(pt100.pt100GetTmp())
         
 
     def btc2(self): #UP  
@@ -246,6 +267,10 @@ class TextWidget(Screen):
 
         if('Mouse' in glob_event_type):
             self.set_num = self.set_num - 1
+
+            if (self.set_num < -30):
+                self.set_num = -30
+
             self.temp_set  = str(self.set_num)
             glob_setting_temp = self.set_num
             # print("#DEBUG set TEMP push minus:"  , self.set_num) 
@@ -254,6 +279,7 @@ class TextWidget(Screen):
 class SM02App(App):
     def build(self):
         Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), glob_delay*60)
+        Clock.schedule_interval(lambda dt: Err_and_Bzr(), 1)
         return Display()
 
 if __name__ == "__main__":
