@@ -12,8 +12,8 @@ from kivy.clock import Clock
 from functools import partial 
 ################################################# 
 # if you use the code for Raspberry Pi, turn into True,  if use PC pls put False
-RASPBERRY_CODE = True
-#RASPBERRY_CODE = False
+#RASPBERRY_CODE = True
+RASPBERRY_CODE = False
 
 if (RASPBERRY_CODE == True):
     import pt100
@@ -32,16 +32,17 @@ Window.size = (800,515)
 #Window.size = (450,350)
 ################################################# 
 #GPIO  Test 
-#import RPi.GPIO as GPIO    # later delete by saka
-#GPIO.setmode(GPIO.BCM)     # later delete by saka
-#GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # ERR State # later delete by saka
+import RPi.GPIO as GPIO    # later delete by saka
+GPIO.setmode(GPIO.BCM)     # later delete by saka
+GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # ERR State # later delete by saka
+GPIO.setup(13, GPIO.OUT, initial=GPIO.LOW)   # later delete by saka
 
 if (RASPBERRY_CODE == True):
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(21, GPIO.OUT) #CDU  
     GPIO.setup(16, GPIO.OUT) #AGI
     GPIO.setup(12, GPIO.IN)  #ERR State
-    GPIO.setup(13, GPIO.OUT) #Buzzer out
+    GPIO.setup(13, GPIO.OUT, initial=GPIO.LOW) #Buzzer out
 ################################################# 
 #GLOBAL variables
 glob_CDU_stat = 0
@@ -58,6 +59,7 @@ def Err_and_Bzr ():
             print ("****************** CAUTION *************")
             print ("             Error Occur")
             print ("****************************************")
+            GPIO.output(13, 1);
         else :
             print ("////////////////////////////////////////")
             print ("//now stable, and do well everything//")
@@ -151,7 +153,7 @@ class Screen_KitchenTimer(Screen):
 
     def tempUpdate(self):
         global glob_current_temp
-        if (RASPBERRY_CODE  == true):
+        if (RASPBERRY_CODE  == True):
             self.temp_now_KT = str(pt100.pt100GetTmp())
     
     def on_command(self, command):
@@ -209,6 +211,9 @@ class Screen_Alert(Screen):
         self.smalt.current = 'Display'
         SM02App().build()
         print("Move to main view")
+
+    def btnBuzzOff(self):
+        GPIO.output(13, 0);
 
 
 
