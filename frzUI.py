@@ -264,6 +264,8 @@ class TextWidget(Screen):
 
         if('Mouse' in glob_event_type):
             self.set_num = self.set_num + 1
+            if (self.set_num > 10):
+                self.set_num = 10
             self.temp_set  = str(self.set_num)
             glob_setting_temp = self.set_num
             # print("#DEBUG set TEMP push Plus:"  , self.set_num) 
@@ -276,8 +278,8 @@ class TextWidget(Screen):
         if('Mouse' in glob_event_type):
             self.set_num = self.set_num - 1
 
-            if (self.set_num < -30):
-                self.set_num = -30
+            if (self.set_num < -35):
+                self.set_num = -35
 
             self.temp_set  = str(self.set_num)
             glob_setting_temp = self.set_num
