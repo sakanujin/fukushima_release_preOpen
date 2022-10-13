@@ -28,7 +28,7 @@ import time
 #Window.fullscreen = True
 #Config.set('input', 'mouse', 'mouse, disable_on_activity')
 #jllWindow.size = (1000,500)
-Window.size = (800,515)
+Window.size = (800,470)
 #Window.size = (450,350)
 ################################################# 
 #GPIO  Test 
