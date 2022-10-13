@@ -12,8 +12,8 @@ from kivy.clock import Clock
 from functools import partial 
 ################################################# 
 # if you use the code for Raspberry Pi, turn into True,  if use PC pls put False
-#RASPBERRY_CODE = True
-RASPBERRY_CODE = False
+RASPBERRY_CODE = True
+#RASPBERRY_CODE = False
 
 if (RASPBERRY_CODE == True):
     import pt100
@@ -28,14 +28,14 @@ import time
 #Window.fullscreen = True
 #Config.set('input', 'mouse', 'mouse, disable_on_activity')
 #jllWindow.size = (1000,500)
-Window.size = (800,470)
+Window.size = (800,515) # this is for 5inch
 #Window.size = (450,350)
 ################################################# 
 #GPIO  Test 
-import RPi.GPIO as GPIO    # later delete by saka
-GPIO.setmode(GPIO.BCM)     # later delete by saka
-GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # ERR State # later delete by saka
-GPIO.setup(13, GPIO.OUT, initial=GPIO.LOW)   # later delete by saka
+#import RPi.GPIO as GPIO    # later delete by saka
+#GPIO.setmode(GPIO.BCM)     # later delete by saka
+#GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # ERR State # later delete by saka
+#GPIO.setup(13, GPIO.OUT, initial=GPIO.LOW)   # later delete by saka
 
 if (RASPBERRY_CODE == True):
     GPIO.setmode(GPIO.BCM)
@@ -53,11 +53,11 @@ glob_delay        = 3
 glob_event_type = ''
 ################################################# 
 def Err_and_Bzr ():
-    #if (RASPBERRY_CODE == True):
-    if (RASPBERRY_CODE == False):
+    if (RASPBERRY_CODE == True):
+    #if (RASPBERRY_CODE == False):
         if GPIO.input(12) == 1:
-            print ("****************** CAUTION *************")
-            print ("             Error Occur")
+            print ("************** CAUTION *****************")
+            print ("            Error Occur")
             print ("****************************************")
             GPIO.output(13, 1);
         else :
@@ -149,12 +149,14 @@ class Screen_KitchenTimer(Screen):
         super(Screen_KitchenTimer, self).__init__(**kwargs)
         if (RASPBERRY_CODE  == True):
             self.temp_now_KT = str(pt100.pt100GetTmp())
+            #self.temp_now_KT = str('xx') # dummy instead of pt100
             Clock.schedule_interval(lambda dt: self.tempUpdate(), 1)
 
     def tempUpdate(self):
         global glob_current_temp
         if (RASPBERRY_CODE  == True):
             self.temp_now_KT = str(pt100.pt100GetTmp())
+            #self.temp_now_KT = str('xx') # dummy instead of pt100
     
     def on_command(self, command):
         if('Mouse' in glob_event_type):
@@ -215,8 +217,6 @@ class Screen_Alert(Screen):
     def btnBuzzOff(self):
         GPIO.output(13, 0);
 
-
-
 ################################################
 
 class TextWidget(Screen):
@@ -238,7 +238,7 @@ class TextWidget(Screen):
 
         if (RASPBERRY_CODE == True):
             self.temp_now = str(pt100.pt100GetTmp())
-            #self.temp_now = str(25)
+            #self.temp_now = str('dm') #dummy pt100
         else: 
             self.temp_now = str(25)
 
@@ -262,6 +262,7 @@ class TextWidget(Screen):
     def tempUpdate(self):
         if (RASPBERRY_CODE  == True):
             self.temp_now = str(pt100.pt100GetTmp())
+            #self.temp_now = str('xx') #dummy pt100
         
 
     def btc2(self): #UP  
@@ -291,7 +292,6 @@ class TextWidget(Screen):
             # print("#DEBUG set TEMP push minus:"  , self.set_num) 
             # print("#DEBUG set grobal_setting_temp:"  , glob_setting_temp) 
 
-#class Display(BoxLayout):
 class Display(Screen):
     ev_type = ''
     
@@ -305,11 +305,11 @@ class Display(Screen):
 
 class SM02App(App):
     smpy = ScreenManager() 
-    #err_flag = 1;
+    err_flag = 0;  ## folowing if statement is always FALSE
 
     def err_occur_trans(self):
-        #if (self.err_flag == 1):
-        if GPIO.input(12) == 1:
+        if (self.err_flag == 1):  ## always FALSE 
+        #if GPIO.input(12) == 1:
             self.smpy.current= 'Screen_Alert'
 
     def build(self):
