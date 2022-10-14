@@ -9,7 +9,8 @@
         on_touch_down: root.touch_down_def(args[1])
         ScreenManager:
             id: sm
-            TextWidget:
+            #TextWidget:
+            Screen_Home:
             Screen_KitchenTimer:
             Screen_One:
             Screen_Alert:
@@ -35,7 +36,8 @@
                 color: 0,0,0,1
                 on_press:
                     sm.transition = SlideTransition(direction='right')
-                    sm.current = 'TextWidget'
+                    #sm.current = 'TextWidget'
+                    sm.current = 'Screen_Home'
             Button:
                 id:tmbt
                 background_normal:""  # it is important for specify background color 
@@ -319,8 +321,9 @@
                 font_size:58
                 text:"ブザー解除"
 
-<TextWidget>:
-    name: 'TextWidget' 
+#<TextWidget>:
+<Screen_Home>:
+    name: 'Screen_Home' 
     BoxLayout:
         orientation: 'horizontal'
         size: root.size
@@ -373,10 +376,9 @@
                     id: label1_6
                     font_name: './mplus-2c-regular.ttf'
                     font_size: 58
-                    #text_size:self.size
+                    text_size:self.size
                     #valigh:"bottom"
                     #haligh:"right"
-                    text_size:self.size
                     halign:"center"
                     text: "℃"
 
@@ -384,7 +386,7 @@
             orientation: 'vertical'
             size_hint:  0.25, 1
             Button:
-                id: buttona  # saka3
+                id: buttona            # saka3
                 size_hint:  0.25, 0.35 #saka3
                 background_normal:""  # it is important for specify background color 
 
@@ -413,7 +415,7 @@
 <ToggleButton@ToggleButton>
     background_color:(0,0,0,0)
     background_normal:''
-    text_size: self.width, None
+    text_size: self.width,None
     halign: 'center'
     canvas.before:
         Color:
