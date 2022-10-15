@@ -12,8 +12,8 @@ from kivy.clock import Clock
 from functools import partial 
 ################################################# 
 # if you use the code for Raspberry Pi, turn into True,  if use PC pls put False
-RASPBERRY_CODE = True
-#RASPBERRY_CODE = False
+#RASPBERRY_CODE = True
+RASPBERRY_CODE = False
 
 if (RASPBERRY_CODE == True):
     import pt100
@@ -30,11 +30,11 @@ Window.size = (800,470)
 #Window.size = (450,350)
 ################################################# 
 #GPIO  Test 
-#DEBUG=True
-DEBUG=False
+DEBUG=True
+#DEBUG=False
 
-import RPi.GPIO as GPIO    # later delete by saka
-GPIO.setmode(GPIO.BCM)     # later delete by saka
+import RPi.GPIO as GPIO       # later delete by saka
+GPIO.setmode(GPIO.BCM)        # later delete by saka
 if (DEBUG == True):
     print("now Debug mode ")
     import RPi.GPIO as GPIO    # later delete by saka
@@ -153,8 +153,12 @@ class Screen_KitchenTimer(Screen):
         if('Mouse' in glob_event_type):
             if command == '+10 sec':
                 self.left_time += 10
+                if (self.left_time > 990):
+                    self.left_time = 990
             elif command == '-10 sec':
                 self.left_time -= 10
+                if (self.left_time < 0):
+                    self.left_time = 0
             elif command == 'start/stop':
                 if self.is_countdown:
                     self.stop_timer()
@@ -286,7 +290,6 @@ class Screen_Home(Screen):
             # print("#DEBUG set TEMP push minus:"  , self.set_num) 
             # print("#DEBUG set grobal_setting_temp:"  , glob_setting_temp) 
 
-#class Display(BoxLayout):
 class Display(Screen):
     ev_type = ''
     
@@ -301,10 +304,6 @@ class Display(Screen):
 class SM02App(App):
     smpy = ScreenManager() 
     #err_flag = 1;
-    #def __init__(self, **kwargs):
-    #def __init__(self): # initial output 
-    #    GPIO.output(
-    #    GPIO.output(
 
     def err_occur_trans(self):
         #if (self.err_flag == 1):
