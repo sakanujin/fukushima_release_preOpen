@@ -12,8 +12,8 @@ from kivy.clock import Clock
 from functools import partial 
 ################################################# 
 # if you use the code for Raspberry Pi, turn into True,  if use PC pls put False
-#RASPBERRY_CODE = True
-RASPBERRY_CODE = False
+RASPBERRY_CODE = True
+#RASPBERRY_CODE = False
 
 if (RASPBERRY_CODE == True):
     import pt100
@@ -30,16 +30,23 @@ Window.size = (800,470)
 #Window.size = (450,350)
 ################################################# 
 #GPIO  Test 
+#DEBUG=True
+DEBUG=False
+
 import RPi.GPIO as GPIO    # later delete by saka
 GPIO.setmode(GPIO.BCM)     # later delete by saka
-GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # ERR State # later delete by saka
-GPIO.setup(13, GPIO.OUT, initial=GPIO.LOW)   # later delete by saka
+if (DEBUG == True):
+    print("now Debug mode ")
+    import RPi.GPIO as GPIO    # later delete by saka
+    GPIO.setmode(GPIO.BCM)     # later delete by saka
+    GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # ERR State # later delete by saka
+    GPIO.setup(13, GPIO.OUT, initial=GPIO.LOW)   # later delete by saka
 
 if (RASPBERRY_CODE == True):
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(21, GPIO.OUT) #CDU  
-    GPIO.setup(16, GPIO.OUT) #AGI
-    GPIO.setup(12, GPIO.IN)  #ERR State
+    GPIO.setup(21, GPIO.OUT,initial=GPIO.HIGH) #CDU  
+    GPIO.setup(16, GPIO.OUT,initial=GPIO.HIGH) #AGI
+    GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)# ERR State 
     GPIO.setup(13, GPIO.OUT, initial=GPIO.LOW) #Buzzer out
 ################################################# 
 #GLOBAL variables
@@ -294,6 +301,10 @@ class Display(Screen):
 class SM02App(App):
     smpy = ScreenManager() 
     #err_flag = 1;
+    #def __init__(self, **kwargs):
+    #def __init__(self): # initial output 
+    #    GPIO.output(
+    #    GPIO.output(
 
     def err_occur_trans(self):
         #if (self.err_flag == 1):
