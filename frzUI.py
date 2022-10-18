@@ -26,15 +26,18 @@ import time
 #Window.fullscreen = 'auto'
 #Window.fullscreen = True
 #Config.set('input', 'mouse', 'mouse, disable_on_activity')
-Window.size = (800,470)
-#Window.size = (450,350)
+Config.set('input', 'mouse', 'mouse, disable_multitouch')
+Config.set('modules', 'inspector', '')
+
+#Window.size = (800,530)
+Window.size = (450,350)
 ################################################# 
 #GPIO  Test 
 DEBUG=True
 #DEBUG=False
 
-import RPi.GPIO as GPIO       # later delete by saka
-GPIO.setmode(GPIO.BCM)        # later delete by saka
+#import RPi.GPIO as GPIO       # later delete by saka
+#GPIO.setmode(GPIO.BCM)        # later delete by saka
 if (DEBUG == True):
     print("now Debug mode ")
     import RPi.GPIO as GPIO    # later delete by saka
@@ -52,14 +55,14 @@ if (RASPBERRY_CODE == True):
 #GLOBAL variables
 glob_CDU_stat = 0
 glob_AGI_stat = 1  #1 Renzoku,  2 Danzoku 
-glob_current_temp = 25
-glob_setting_temp = 25
+glob_current_temp = 0
+glob_setting_temp = 0
 glob_delay        = 3
 glob_event_type = ''
 ################################################# 
 def Err_and_Bzr ():
-    #if (RASPBERRY_CODE == True):
-    if (RASPBERRY_CODE == False):
+    if (RASPBERRY_CODE == True):
+    #if (RASPBERRY_CODE == False):
         if GPIO.input(12) == 1:
             print ("****************** CAUTION *************")
             print ("             Error Occur")
@@ -76,15 +79,19 @@ def control_OnOff_by_temp():
     # print("What is: {}".format(glob_AGI_stat))
     # print("#DEBUG# On/Off delay time is ", glob_delay)
     # print("now:{}, set:{}".format(now, setting))
+    global glob_current_temp
+    global glob_setting_temp
+    global glob_AGI_stat
+    global glob_CDU_stat
     if (glob_current_temp >= (glob_setting_temp + 2)):
-        # print("************** CDU ON ************")
+        print("************** CDU ON ************")
         glob_CDU_stat = 1
         if(RASPBERRY_CODE == True):
             GPIO.output(21, 1)
             if (glob_AGI_stat == 2):# AGI Danzoku 
                 GPIO.output(16, 1)
     elif (glob_current_temp <= (glob_setting_temp - 2)):
-        # print("///////////// CDU OFF ////////////")
+        print("///////////// CDU OFF ////////////")
         glob_CDU_stat = 0
         if(RASPBERRY_CODE == True):
             GPIO.output(21, 0)
@@ -142,12 +149,14 @@ class Screen_KitchenTimer(Screen):
         super(Screen_KitchenTimer, self).__init__(**kwargs)
         if (RASPBERRY_CODE  == True):
             self.temp_now_KT = str(pt100.pt100GetTmp())
+            glob_current_temp = self.temp_now_KT
             Clock.schedule_interval(lambda dt: self.tempUpdate(), 1)
 
     def tempUpdate(self):
         global glob_current_temp
         if (RASPBERRY_CODE  == True):
             self.temp_now_KT = str(pt100.pt100GetTmp())
+            glob_current_temp = self.temp_now_KT
     
     def on_command(self, command):
         if('Mouse' in glob_event_type):
@@ -311,7 +320,8 @@ class SM02App(App):
             self.smpy.current= 'Screen_Alert'
 
     def build(self):
-        Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), glob_delay*60)
+        #Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), glob_delay*60)
+        Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), 2)
         Clock.schedule_interval(lambda dt: Err_and_Bzr(), 1)
         self.smpy.add_widget(Display(name='Display'))
         self.smpy.add_widget(Screen_Alert(name='Screen_Alert'))
