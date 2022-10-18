@@ -29,8 +29,8 @@ import time
 Config.set('input', 'mouse', 'mouse, disable_multitouch')
 Config.set('modules', 'inspector', '')
 
-Window.size = (800,530)
-#Window.size = (450,350)
+#Window.size = (800,530)
+Window.size = (450,350)
 ################################################# 
 #GPIO  Test 
 DEBUG=True
@@ -54,10 +54,11 @@ if (RASPBERRY_CODE == True):
 ################################################# 
 #GLOBAL variables
 glob_CDU_stat = 0
-glob_AGI_stat = 1  #1 Renzoku,  2 Danzoku 
+glob_AGI_stat = 2  #1 Renzoku,  2 Danzoku 
 glob_current_temp = 0
-glob_setting_temp = 0
+glob_setting_temp = -30
 glob_delay        = 3
+#glob_delay        = 1
 glob_event_type = ''
 ################################################# 
 def Err_and_Bzr ():
@@ -69,9 +70,9 @@ def Err_and_Bzr ():
             print ("****************************************")
             GPIO.output(13, 1);
         else :
-            print ("////////////////////////////////////////")
-            print ("//now stable, and do well everything//")
-            print ("////////////////////////////////////////")
+           # print ("////////////////////////////////////////")
+           print ("//now stable, and do well everything//")
+           # print ("////////////////////////////////////////")
 
 
 ################################################# 
@@ -97,6 +98,7 @@ def control_OnOff_by_temp():
             GPIO.output(21, 0)
             if (glob_AGI_stat == 2):# AGI Danzoku 
                 GPIO.output(16, 0)
+                print("AGI OFF" )
 ################################################# 
 class Screen_One(Screen): # 3rd Screen
     stMin =   StringProperty()
@@ -149,14 +151,14 @@ class Screen_KitchenTimer(Screen):
         super(Screen_KitchenTimer, self).__init__(**kwargs)
         if (RASPBERRY_CODE  == True):
             self.temp_now_KT = str(pt100.pt100GetTmp())
-            glob_current_temp = self.temp_now_KT
+            glob_current_temp = int(self.temp_now_KT)
             Clock.schedule_interval(lambda dt: self.tempUpdate(), 1)
 
     def tempUpdate(self):
         global glob_current_temp
         if (RASPBERRY_CODE  == True):
             self.temp_now_KT = str(pt100.pt100GetTmp())
-            glob_current_temp = self.temp_now_KT
+            glob_current_temp = int(self.temp_now_KT)
     
     def on_command(self, command):
         if('Mouse' in glob_event_type):
