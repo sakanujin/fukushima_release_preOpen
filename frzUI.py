@@ -12,8 +12,8 @@ from kivy.clock import Clock
 from functools import partial 
 ################################################# 
 # if you use the code for Raspberry Pi, turn into True,  if use PC pls put False
-#RASPBERRY_CODE = True
-RASPBERRY_CODE = False
+RASPBERRY_CODE = True
+#RASPBERRY_CODE = False
 
 if (RASPBERRY_CODE == True):
     import pt100
@@ -29,8 +29,8 @@ import time
 Config.set('input', 'mouse', 'mouse, disable_multitouch')
 Config.set('modules', 'inspector', '')
 
-#Window.size = (800,530)
-Window.size = (450,350)
+Window.size = (800,530)
+#Window.size = (450,350)
 ################################################# 
 #GPIO  Test 
 DEBUG=True
@@ -320,8 +320,8 @@ class SM02App(App):
             self.smpy.current= 'Screen_Alert'
 
     def build(self):
-        #Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), glob_delay*60)
-        Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), 2)
+        Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), glob_delay*60)
+        #Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), 2)
         Clock.schedule_interval(lambda dt: Err_and_Bzr(), 1)
         self.smpy.add_widget(Display(name='Display'))
         self.smpy.add_widget(Screen_Alert(name='Screen_Alert'))
