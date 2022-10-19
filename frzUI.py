@@ -30,11 +30,11 @@ Config.set('input', 'mouse', 'mouse, disable_multitouch')
 Config.set('modules', 'inspector', '')
 
 #Window.size = (800,530)
-Window.size = (450,350)
+Window.size = (800,330)
 ################################################# 
 #GPIO  Test 
-DEBUG=True
-#DEBUG=False
+#DEBUG=True
+DEBUG=False
 
 #import RPi.GPIO as GPIO       # later delete by saka
 #GPIO.setmode(GPIO.BCM)        # later delete by saka
@@ -90,6 +90,7 @@ def control_OnOff_by_temp():
         if(RASPBERRY_CODE == True):
             GPIO.output(21, 1)
             if (glob_AGI_stat == 2):# AGI Danzoku 
+                print("&&&&&&&& AGI DANZOKU == ON with CDU &&&&&&&&&&&")
                 GPIO.output(16, 1)
     elif (glob_current_temp <= (glob_setting_temp - 2)):
         print("///////////// CDU OFF ////////////")
@@ -97,6 +98,7 @@ def control_OnOff_by_temp():
         if(RASPBERRY_CODE == True):
             GPIO.output(21, 0)
             if (glob_AGI_stat == 2):# AGI Danzoku 
+                print("||||||||  AGI DANZOKU  OFF with CDU |||||||||||")
                 GPIO.output(16, 0)
                 print("AGI OFF" )
 ################################################# 
@@ -134,6 +136,7 @@ class Screen_One(Screen): # 3rd Screen
             #print("AGI: {}".format(glob_AGI_stat))
             if(RASPBERRY_CODE == True):
                 GPIO.output(16, 1) # always AGI ON  
+                print ("AGI  RENZOKU   ALWAYS ON")
 
     def btDanzoku(self):
         global glob_AGI_stat
@@ -322,8 +325,8 @@ class SM02App(App):
             self.smpy.current= 'Screen_Alert'
 
     def build(self):
-        Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), glob_delay*60)
-        #Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), 2)
+        #Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), glob_delay*60)
+        Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), 2)
         Clock.schedule_interval(lambda dt: Err_and_Bzr(), 1)
         self.smpy.add_widget(Display(name='Display'))
         self.smpy.add_widget(Screen_Alert(name='Screen_Alert'))
