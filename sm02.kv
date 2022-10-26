@@ -149,6 +149,28 @@
                             on_press: root.btDanzoku()
 
 
+                #BoxLayout: # SHUTDOWN BUTTON
+                #    orientation:'horizontal'
+                    
+                #    Button:
+                #        size_hint:0.25,1
+                #        id: btnSDown
+                #        background_normal:"" # it is important for specify bground color 
+                #        #background_color: (234/255,227/255,227/255,1)
+                #        background_color: (0,0,0,1)
+
+                #        on_press: root.btnSD()
+                #        Image:
+                #            source: "sq_button_off.png"
+                #            #size : 95,95
+                #            size : 125,125
+                #            pos: btnSDown.x + (0.3*self.width), btnSDown.top - (1*self.height)
+                #            #pos: btnSDown.x , btnSDown.top 
+
+                #    Label:
+                #        #size_hint:  0.25, 1
+                #        size_hint:  1,0.25 
+
                 BoxLayout:
                     Label:
                         id: label1_1
@@ -351,7 +373,8 @@
                 Label:
                     id: label1_2
                     font_name: './mplus-2c-regular.ttf'
-                    font_size:170 
+                    #font_size:170 
+                    font_size:120
                     text: root.temp_now
                     text_size:self.size
                     valign:"middle"

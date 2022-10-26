@@ -10,6 +10,7 @@ from kivy.properties import BooleanProperty
 from kivy.properties import NumericProperty
 from kivy.clock import Clock
 from functools import partial 
+import os
 ################################################# 
 # if you use the code for Raspberry Pi, turn into True,  if use PC pls put False
 RASPBERRY_CODE = True
@@ -29,8 +30,8 @@ import time
 Config.set('input', 'mouse', 'mouse, disable_multitouch')
 Config.set('modules', 'inspector', '')
 
-#Window.size = (800,530)
-Window.size = (800,330)
+Window.size = (800,530)
+#Window.size = (800,330)
 ################################################# 
 #GPIO  Test 
 #DEBUG=True
@@ -57,7 +58,7 @@ glob_CDU_stat = 0
 glob_AGI_stat = 2  #1 Renzoku,  2 Danzoku 
 glob_current_temp = 0
 glob_setting_temp = -30
-glob_delay        = 3
+glob_delay        = 1.5
 #glob_delay        = 1
 glob_event_type = ''
 ################################################# 
@@ -84,7 +85,8 @@ def control_OnOff_by_temp():
     global glob_setting_temp
     global glob_AGI_stat
     global glob_CDU_stat
-    if (glob_current_temp >= (glob_setting_temp + 2)):
+    #if (glob_current_temp >= (glob_setting_temp + 2)):
+    if (glob_current_temp >= (glob_setting_temp + 1)):
         print("************** CDU ON ************")
         glob_CDU_stat = 1
         if(RASPBERRY_CODE == True):
@@ -92,7 +94,8 @@ def control_OnOff_by_temp():
             if (glob_AGI_stat == 2):# AGI Danzoku 
                 print("&&&&&&&& AGI DANZOKU == ON with CDU &&&&&&&&&&&")
                 GPIO.output(16, 1)
-    elif (glob_current_temp <= (glob_setting_temp - 2)):
+    #elif (glob_current_temp <= (glob_setting_temp - 2)):
+    elif (glob_current_temp <= (glob_setting_temp - 1)):
         print("///////////// CDU OFF ////////////")
         glob_CDU_stat = 0
         if(RASPBERRY_CODE == True):
@@ -121,6 +124,11 @@ class Screen_One(Screen): # 3rd Screen
             self.valMin = self.valMin - 1
             self.stMin  = str(self.valMin)
             #self.set_num = self.set_num - 1
+
+    def btnSD(self): # shut down button
+        print("#######################shut down is coming...")
+        os.system('sudo shutdown -h now')
+        print("shut down command called already bye...")
 
     def btcDelaySet(self):  
         global glob_delay
@@ -195,6 +203,9 @@ class Screen_KitchenTimer(Screen):
         pass
 
     def stop_timer(self):
+        if (RASPBERRY_CODE == True):
+            GPIO.output(13,0)
+        print("Buzzer is OFF")
         self.is_countdown = False
         Clock.unschedule(self.on_countdown)
         pass
@@ -317,12 +328,15 @@ class Display(Screen):
 
 class SM02App(App):
     smpy = ScreenManager() 
-    #err_flag = 1;
+    err_flag = 0;
 
     def err_occur_trans(self):
-        #if (self.err_flag == 1):
-        if GPIO.input(12) == 1:
-            self.smpy.current= 'Screen_Alert'
+        if (RASPBERRY_CODE == True):
+            if GPIO.input(12) == 1:
+                self.smpy.current= 'Screen_Alert' 
+        else :
+            if (self.err_flag == 1):
+                self.smpy.current= 'Screen_Alert' 
 
     def build(self):
         #Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), glob_delay*60)
