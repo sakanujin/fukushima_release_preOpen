@@ -13,8 +13,8 @@ from functools import partial
 import os
 ################################################# 
 # if you use the code for Raspberry Pi, turn into True,  if use PC pls put False
-RASPBERRY_CODE = True
-#RASPBERRY_CODE = False
+#RASPBERRY_CODE = True
+RASPBERRY_CODE = False
 
 if (RASPBERRY_CODE == True):
     import pt100
@@ -177,8 +177,16 @@ class Screen_KitchenTimer(Screen):
                 self.left_time += 10
                 if (self.left_time > 990):
                     self.left_time = 990
+            if command == '+5 sec':
+                self.left_time += 5
+                if (self.left_time > 990):
+                    self.left_time = 990
             elif command == '-10 sec':
                 self.left_time -= 10
+                if (self.left_time < 0):
+                    self.left_time = 0
+            elif command == '-5 sec':
+                self.left_time -= 5
                 if (self.left_time < 0):
                     self.left_time = 0
             elif command == 'start/stop':
@@ -193,6 +201,9 @@ class Screen_KitchenTimer(Screen):
     def on_countdown(self, dt):
         self.left_time -=1
         if self.left_time == 0:
+            print ("+++Buzzer ON ++++")
+            if (RASPBERRY_CODE == True):
+                GPIO.output(13,1)
             self.is_countdown = False
             return False
 
@@ -200,6 +211,7 @@ class Screen_KitchenTimer(Screen):
         self.is_countdown = True
         #Clock.schedule_interval(self.on_countdown, 1.0) #sec 
         Clock.schedule_interval(self.on_countdown, 60.0)  #min
+         
         pass
 
     def stop_timer(self):
