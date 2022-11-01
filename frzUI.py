@@ -13,8 +13,8 @@ from functools import partial
 import os
 ################################################# 
 # if you use the code for Raspberry Pi, turn into True,  if use PC pls put False
-#RASPBERRY_CODE = True
-RASPBERRY_CODE = False
+RASPBERRY_CODE = True
+#RASPBERRY_CODE = False
 
 if (RASPBERRY_CODE == True):
     import pt100
@@ -61,15 +61,19 @@ glob_setting_temp = -30
 glob_delay        = 1.5
 #glob_delay        = 1
 glob_event_type = ''
+glob_buzz_flag  = True
 ################################################# 
 def Err_and_Bzr ():
+    global grob_buzz_flag
     if (RASPBERRY_CODE == True):
     #if (RASPBERRY_CODE == False):
         if GPIO.input(12) == 1:
             print ("****************** CAUTION *************")
             print ("             Error Occur")
             print ("****************************************")
-            GPIO.output(13, 1);
+            if (grob_buzz_flag == True):
+                GPIO.output(13, 1);
+
         else :
            # print ("////////////////////////////////////////")
            print ("//now stable, and do well everything//")
@@ -86,7 +90,7 @@ def control_OnOff_by_temp():
     global glob_AGI_stat
     global glob_CDU_stat
     #if (glob_current_temp >= (glob_setting_temp + 2)):
-    if (glob_current_temp >= (glob_setting_temp + 1)):
+    if glob_current_temp >= (glob_setting_temp+1):
         print("************** CDU ON ************")
         glob_CDU_stat = 1
         if(RASPBERRY_CODE == True):
@@ -239,6 +243,8 @@ class Screen_Alert(Screen):
         super(Screen_Alert, self).__init__(**kwargs)
 
     def btnBack(self):
+        global glob_buzz_flag    # if back to MAIN screen, buzzer turn active 
+        glob_buzz_flag = True
         self.smalt.add_widget(Display(name='Display'))
         #self.smpy.add_widget(Screen_Alert(name='Screen_Alert'))
         #self.smpy.add_widget(Screen_One(name='Screen_One'))
@@ -247,7 +253,9 @@ class Screen_Alert(Screen):
         print("Move to main view")
 
     def btnBuzzOff(self):
+        global glob_buzz_flag    # if back to MAIN screen, buzzer turn active 
         GPIO.output(13, 0);
+        glob_buzz_flag = False
 
 
 
@@ -351,8 +359,7 @@ class SM02App(App):
                 self.smpy.current= 'Screen_Alert' 
 
     def build(self):
-        #Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), glob_delay*60)
-        Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), 2)
+        Clock.schedule_interval(lambda dt: control_OnOff_by_temp(), glob_delay*60)
         Clock.schedule_interval(lambda dt: Err_and_Bzr(), 1)
         self.smpy.add_widget(Display(name='Display'))
         self.smpy.add_widget(Screen_Alert(name='Screen_Alert'))
